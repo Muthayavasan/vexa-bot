@@ -1,0 +1,106 @@
+{
+  "users": {
+    "usr_f9d6000feeec": {
+      "user_id": "usr_f9d6000feeec",
+      "name": "muthaya",
+      "email": "muthayaadhi18@gmail.com",
+      "password": "123",
+      "auth_token": "aether_token_usr_f9d6000feeec_1788896675",
+      "created_at": "2026-09-09 01:14:35",
+      "last_login": "2026-09-09 01:14:35"
+    },
+    "usr_7bba67da0d83": {
+      "user_id": "usr_7bba67da0d83",
+      "name": "rocky",
+      "email": "rocky17@gmail.com",
+      "password": "pbkdf2:sha256:100000$36ba70199089b7a47d943ec236bbf696$45b20bb3eb82d1aecc4fb401e0893c7a27691361965ed9c70a5f36155fca262d",
+      "auth_token": "aether_token_usr_7bba67da0d83_12d40f28458fbb738d60b7bea6ce91a6",
+      "created_at": "2026-09-09 01:16:22",
+      "last_login": "2026-09-09 01:33:31"
+    },
+    "usr_f3a6f2588f3c": {
+      "user_id": "usr_f3a6f2588f3c",
+      "name": "Test User",
+      "email": "testuser_cec4ef@example.com",
+      "password": "pbkdf2:sha256:100000$2f70402f7ff86e9123019a84500b2f20$aeebfcdb35891b4d1b719f284be3d1d9c68657c13c245f9e77ed2f3189b55dec",
+      "auth_token": "aether_token_usr_f3a6f2588f3c_16f3beada83b745770d6c972d5f0c245",
+      "created_at": "2026-09-09 01:26:20",
+      "last_login": "2026-09-09 01:26:20"
+    },
+    "usr_af62edac817a": {
+      "user_id": "usr_af62edac817a",
+      "name": "Alice Wonderland",
+      "email": "alice.wonder@test.com",
+      "password": "pbkdf2:sha256:100000$f85289b3cbdcce6dcbc6a6a7509d631b$c405b305560e949f898ade816ab51905b2cea6299609283fd31353479d701a16",
+      "auth_token": "aether_token_usr_af62edac817a_bf735bba00459129e8eb6f8514cd7e8a",
+      "created_at": "2026-09-09 01:29:16",
+      "last_login": "2026-09-09 01:29:16"
+    },
+    "usr_a62954903b28": {
+      "user_id": "usr_a62954903b28",
+      "name": "Bob Builder",
+      "email": "bob.builder@test.com",
+      "password": "pbkdf2:sha256:100000$f63d9b0bc47b1bc5609c02d50ef1a938$81f19ffb3fb945a2be4d3b20fa2e58390bca93f89bfb35241baa5aa4c291fff1",
+      "auth_token": "aether_token_usr_a62954903b28_bbcbeebc8025d777986610fb1b90fead",
+      "created_at": "2026-09-09 01:29:16",
+      "last_login": "2026-09-09 01:29:16"
+    },
+    "usr_38f19cf7a787": {
+      "user_id": "usr_38f19cf7a787",
+      "name": "Muthayavasan",
+      "email": "muthayavasan17@gmail.com",
+      "password": "pbkdf2:sha256:100000$c734d9a4099fc5a25edf11c891373624$d46b2b3951814494a810129661d77503dc1cc6c8eb5476045a0d009f16209322",
+      "auth_token": "aether_token_usr_38f19cf7a787_3efb990857845427b969bddfd449afdc",
+      "created_at": "2026-09-09 01:34:28",
+      "last_login": "2026-09-09 01:34:28"
+    }
+  },
+  "user_sessions": {
+    "usr_f9d6000feeec": {},
+    "usr_7bba67da0d83": {
+      "7864449d": {
+        "id": "7864449d",
+        "user_id": "usr_7bba67da0d83",
+        "title": "Welcome Chat",
+        "created_at": "Sep 9, 01:16 AM",
+        "messages": []
+      }
+    },
+    "usr_f3a6f2588f3c": {
+      "session_1": {
+        "id": "session_1",
+        "title": "Private Chat",
+        "messages": []
+      }
+    },
+    "usr_af62edac817a": {
+      "alice_chat_1": {
+        "id": "alice_chat_1",
+        "title": "Alice Top Secret Algorithms",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Hello from Alice"
+          }
+        ]
+      }
+    },
+    "usr_a62954903b28": {},
+    "usr_38f19cf7a787": {
+      "1692437d": {
+        "id": "1692437d",
+        "user_id": "usr_38f19cf7a787",
+        "title": "Welcome Chat",
+        "created_at": "Sep 9, 01:34 AM",
+        "messages": []
+      },
+      "5c4d756a": {
+        "id": "5c4d756a",
+        "user_id": "usr_38f19cf7a787",
+        "title": "New Conversation",
+        "created_at": "Sep 9, 03:22 PM",
+        "messages": []
+      }
+    }
+  }
+}

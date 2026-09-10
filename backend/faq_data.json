@@ -1,0 +1,137 @@
+[
+  {
+    "category": "Greetings & Small Talk",
+    "keywords": ["hi", "hello", "hey", "good morning", "good evening", "good afternoon", "greetings", "howdy"],
+    "answer": "Hello! Welcome to our workspace. How can I assist you today?"
+  },
+  {
+    "category": "Greetings & Small Talk",
+    "keywords": ["how are you", "how are you doing", "how's it going", "how are things", "how do you do"],
+    "answer": "I'm doing well, thank you! Ready and excited to help answer your questions. What's on your mind?"
+  },
+  {
+    "category": "Greetings & Small Talk",
+    "keywords": ["who are you", "what is your name", "tell me about yourself", "are you a bot", "what are you"],
+    "answer": "I am your automated Assistant! I can help answer common questions regarding our platform, support, account settings, and services offline without an internet connection."
+  },
+  {
+    "category": "Greetings & Small Talk",
+    "keywords": ["what can you do", "features", "capabilities", "help me with", "what do you support"],
+    "answer": "I can assist you with business hours, pricing plans, account management, refund policies, troubleshooting login issues, and technical support FAQs."
+  },
+  {
+    "category": "Greetings & Small Talk",
+    "keywords": ["who made you", "creator", "developer", "who created you"],
+    "answer": "I was developed by our engineering team to provide instantaneous, secure, offline customer assistance and conversational support."
+  },
+  {
+    "category": "Business & Product Basics",
+    "keywords": ["hours", "open", "opening time", "when do you open", "what time do you close", "operating hours", "business hours", "schedule"],
+    "answer": "Our standard business hours are Monday through Friday, 9:00 AM to 6:00 PM EST. Our automated services and self-service portal are available 24/7."
+  },
+  {
+    "category": "Business & Product Basics",
+    "keywords": ["location", "address", "where are you located", "headquarters", "office location", "where is your office"],
+    "answer": "Our headquarters are located at 450 Innovation Parkway, Suite 300, San Francisco, CA 94105. We also support fully remote team interactions worldwide."
+  },
+  {
+    "category": "Business & Product Basics",
+    "keywords": ["contact", "contact info", "phone", "email address", "how to call", "support phone", "reach out"],
+    "answer": "You can reach our team anytime via email at support@vexa.ai or by calling +1 (800) 555-0199 during standard business hours (Mon-Fri, 9am - 6pm EST)."
+  },
+  {
+    "category": "Business & Product Basics",
+    "keywords": ["pricing", "cost", "how much", "plans", "subscription", "price", "fee", "membership"],
+    "answer": "We offer three transparent tiers: Starter (Free forever), Professional ($19/user/month for advanced AI tooling), and Enterprise (custom tailored pricing with dedicated SLAs and custom models)."
+  },
+  {
+    "category": "Business & Product Basics",
+    "keywords": ["free trial", "try for free", "demo", "trial period", "test for free"],
+    "answer": "Yes! All paid tiers come with a 14-day risk-free trial. No credit card is required to get started on the Starter plan."
+  },
+  {
+    "category": "Business & Product Basics",
+    "keywords": ["refund", "refund policy", "money back", "cancel subscription", "get refund", "return policy"],
+    "answer": "We maintain a 30-day money-back guarantee for all subscription plans. If you are not completely satisfied, contact support@vexa.ai within 30 days for a full refund."
+  },
+  {
+    "category": "Business & Product Basics",
+    "keywords": ["shipping", "delivery", "delivery time", "how long to deliver", "track order", "transit time"],
+    "answer": "For digital subscriptions and licenses, access is activated instantly upon signup. For physical device accessories, standard shipping takes 3-5 business days."
+  },
+  {
+    "category": "Account Help",
+    "keywords": ["reset password", "forgot password", "change password", "recover password", "new password", "can't remember password"],
+    "answer": "To reset your password, click the 'Forgot password?' link on the Sign In page, enter your registered email address, and follow the recovery instructions."
+  },
+  {
+    "category": "Account Help",
+    "keywords": ["create account", "sign up", "register", "new account", "join", "make an account"],
+    "answer": "You can create a new account in seconds: click 'Create Account' at the top of the auth card, enter your name, email, and a password (min 4 characters), then submit."
+  },
+  {
+    "category": "Account Help",
+    "keywords": ["delete account", "remove account", "close account", "terminate account"],
+    "answer": "To delete your account and all associated conversation history, visit Account Settings > Privacy & Data, or email privacy@vexa.ai with your request."
+  },
+  {
+    "category": "Account Help",
+    "keywords": ["update email", "change email", "edit email", "new email address"],
+    "answer": "You can update your email address in Account Settings > Profile. A confirmation verification code will be sent to both your old and new email addresses."
+  },
+  {
+    "category": "Account Help",
+    "keywords": ["dark mode", "theme", "light mode", "change appearance", "switch theme"],
+    "answer": "You can switch between light and dark mode at any time using the theme toggle button located at the top right of your chat screen or in the left sidebar."
+  },
+  {
+    "category": "Technical Support Basics",
+    "keywords": ["app not loading", "stuck on loading", "blank screen", "white screen", "not opening", "page won't load", "freezing"],
+    "answer": "If the app is not loading properly, please try doing a hard refresh (Ctrl + F5 or Cmd + Shift + R), clear your browser cache, or verify that your local backend server is running."
+  },
+  {
+    "category": "Technical Support Basics",
+    "keywords": ["forgot login", "forgot email", "can't sign in", "unable to login", "login not working", "access denied"],
+    "answer": "If login is failing, ensure your caps lock is off and your email is entered correctly. You can also use the 1-click test accounts (e.g. Muthayavasan or Rocky) or choose 'Continue as Guest'."
+  },
+  {
+    "category": "Technical Support Basics",
+    "keywords": ["payment failed", "card declined", "billing error", "transaction failed", "payment error"],
+    "answer": "Payment failures typically occur due to insufficient funds, an expired card, or 3D Secure verification. Please check with your bank or update your payment card under Billing Settings."
+  },
+  {
+    "category": "Technical Support Basics",
+    "keywords": ["contact support", "talk to support", "help desk", "open ticket", "customer support"],
+    "answer": "You can contact our support team directly by emailing support@vexa.ai or by submitting a ticket in the Help Center. Our average response time is under 15 minutes."
+  },
+  {
+    "category": "Technical Support Basics",
+    "keywords": ["api key", "where to get api key", "configure api key", "gemini key", "groq key"],
+    "answer": "To configure cloud AI providers, paste your keys in your `.env` file (`GEMINI_API_KEY` or `GROQ_API_KEY`) or select the model directly from the sidebar."
+  },
+  {
+    "category": "General FAQ Closers",
+    "keywords": ["thank you", "thanks", "appreciate it", "thx", "thank you so much", "many thanks"],
+    "answer": "You're very welcome! I'm happy to help. Let me know if you need anything else!"
+  },
+  {
+    "category": "General FAQ Closers",
+    "keywords": ["bye", "goodbye", "see you", "farewell", "later", "cya", "have a good day"],
+    "answer": "Goodbye! Have a wonderful day ahead. Feel free to return anytime you have more questions."
+  },
+  {
+    "category": "General FAQ Closers",
+    "keywords": ["that's all", "nothing else", "i'm good", "all set", "done", "no more questions"],
+    "answer": "Great! Glad we could get everything sorted out for you. Have a great day!"
+  },
+  {
+    "category": "General FAQ Closers",
+    "keywords": ["human", "talk to human", "real person", "agent", "representative", "speak to someone", "customer service agent"],
+    "answer": "I'd be glad to connect you with a team member! Please email support@vexa.ai or call +1 (800) 555-0199, and one of our specialists will assist you immediately."
+  },
+  {
+    "category": "Technical Support Basics",
+    "keywords": ["data privacy", "encryption", "is my data safe", "security", "privacy policy"],
+    "answer": "Yes, all chats and user credentials utilize multi-tenant cryptographic isolation and secure local database storage. Your private sessions are never shared."
+  }
+]
