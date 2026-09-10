@@ -1,0 +1,128 @@
+# ========================
+# Environment & Secrets
+# ========================
+.env
+.env.*
+!.env.example
+backend/.env
+backend/.env.*
+*.env
+
+# ========================
+# Python
+# ========================
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+parts/
+var/
+sdist/
+develop-eggs/
+.installed.cfg
+lib/
+lib64/
+*.so
+
+# Virtual Environments
+venv/
+env/
+ENV/
+.venv/
+.env/
+myenv/
+chatbot-env/
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Unit test / coverage
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# ========================
+# Node / React / Vite
+# ========================
+node_modules/
+frontend/node_modules/
+
+# Build output
+dist/
+frontend/dist/
+build/
+frontend/build/
+
+# Vite cache
+.vite/
+frontend/.vite/
+
+# npm / yarn / pnpm
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+package-lock.json
+yarn.lock
+
+# ========================
+# IDEs & Editors
+# ========================
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# ========================
+# Logs & Temp Files
+# ========================
+*.log
+logs/
+*.tmp
+*.bak
+*.swp
+*.swo
+
+# ========================
+# Database & Storage
+# ========================
+*.sqlite3
+*.db
+*.db-shm
+*.db-wal
+instance/
+
+# ========================
+# OS
+# ========================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
