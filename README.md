@@ -1,4 +1,4 @@
-# ✨ Nova AI — Python AI Chatbot
+# ✨ VEXA AI — Python AI Chatbot
 
 A complete, production-grade AI Chatbot application built **100% in Python** using **Streamlit**, with native support for the **Anthropic Claude API** and **OpenAI API**.
 
