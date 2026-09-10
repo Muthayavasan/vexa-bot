@@ -461,6 +461,36 @@ def save_user_chats(req: SaveChatsRequest, authorization: Optional[str] = Header
     return {"status": "success", "user_id": user_id}
 
 
+@app.delete("/api/user/chats/{session_id}")
+def delete_user_chat(session_id: str, authorization: Optional[str] = Header(None), db: Session = Depends(get_db)):
+    """
+    Permanently delete a single chat session and all its messages from the database.
+    Only the session owner can delete it.
+    """
+    token = extract_token_from_header(authorization)
+    if not token:
+        raise HTTPException(status_code=401, detail="Authentication token required.")
+
+    token_owner = db.query(UserModel).filter(UserModel.auth_token == token).first()
+    if not token_owner:
+        raise HTTPException(status_code=401, detail="Invalid or expired session token.")
+
+    session_obj = db.query(ChatSessionModel).filter(ChatSessionModel.session_id == session_id).first()
+    if not session_obj:
+        return {"status": "success", "message": "Session not found (already deleted)."}
+
+    # Ownership check — prevent deleting another user's session
+    if session_obj.user_id != token_owner.user_id:
+        raise HTTPException(status_code=403, detail="Access denied: Cannot delete another user's chat session.")
+
+    # Delete all messages first (foreign key constraint), then the session
+    db.query(ChatMessageModel).filter(ChatMessageModel.session_id == session_id).delete()
+    db.delete(session_obj)
+    db.commit()
+
+    return {"status": "success", "deleted_session_id": session_id}
+
+
 # ------------------------------------------------------------------------------
 # Chat Streaming Endpoint
 # ------------------------------------------------------------------------------

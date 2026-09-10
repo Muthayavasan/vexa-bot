@@ -172,10 +172,21 @@ export const useChat = (user) => {
     };
 
     const deleteSession = (id) => {
+        // Permanently delete from database for logged-in users
+        if (userId !== 'guest' && userToken) {
+            fetch(`${BACKEND_URL}/api/user/chats/${encodeURIComponent(id)}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${userToken}`
+                }
+            }).catch(() => {}); // Silent fail — local state is always updated
+        }
+
         setSessions(prev => {
             const newSessions = { ...prev };
             delete newSessions[id];
-            
+
             if (id === currentSessionId) {
                 const remainingIds = Object.keys(newSessions);
                 if (remainingIds.length > 0) {
@@ -188,6 +199,7 @@ export const useChat = (user) => {
             return newSessions;
         });
     };
+
 
     const clearMessages = () => {
         if (!currentSessionId) return;
