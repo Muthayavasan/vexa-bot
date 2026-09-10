@@ -25,9 +25,10 @@ const AuthModal = ({ onLoginSuccess }) => {
 
         setLoading(true);
 
+        const BACKEND_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
         const endpoint = isSignUp
-            ? 'http://127.0.0.1:8000/api/auth/register'
-            : 'http://127.0.0.1:8000/api/auth/login';
+            ? `${BACKEND_URL}/api/auth/register`
+            : `${BACKEND_URL}/api/auth/login`;
 
         const payload = isSignUp
             ? { name, email, password }
