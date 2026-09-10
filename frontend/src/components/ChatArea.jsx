@@ -202,7 +202,7 @@ const ChatArea = ({ activeSession, onSendMessage, onStopGenerating, isGenerating
                     />
                 ))}
 
-                {isGenerating && <TypingIndicator />}
+                {isGenerating && messages[messages.length - 1]?.role !== 'assistant' && <TypingIndicator />}
             </div>
 
             {/* Composer */}
