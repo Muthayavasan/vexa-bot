@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
-const BACKEND_URL = 'http://127.0.0.1:8000';
+const BACKEND_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
 
 const loadFromStorage = (key, fallback) => {
     try {

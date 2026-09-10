@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: aether-chatbot-backend
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DATABASE_URL
+        sync: false   # Set this manually in Render Dashboard → "Secret File" or env var
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: COMPANY_NAME
+        value: "Aether Dynamics"
+      - key: BOT_NAME
+        value: "harish AI"
+    healthCheckPath: /api/health
+    autoDeploy: true

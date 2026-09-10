@@ -39,7 +39,7 @@ except Exception:
 
 app = FastAPI(title="Aether AI Backend API with SQLite & Multi-User Isolation")
 
-# Allow CORS for React frontend (supports all localhost/127.0.0.1 ports)
+# Allow CORS for React frontend (supports localhost, 127.0.0.1, Vercel deployments, and custom domains)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -50,7 +50,7 @@ app.add_middleware(
         "http://127.0.0.1:5173",
         "http://127.0.0.1:5174",
     ],
-    allow_origin_regex=r"^https?://(localhost|127\.0\.0\.1)(:\d+)?$",
+    allow_origin_regex=r"^https?://(localhost|127\.0\.0\.1|.*\.vercel\.app)(:\d+)?$",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
