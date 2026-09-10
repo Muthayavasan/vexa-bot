@@ -425,7 +425,7 @@
 /* Tab Switcher on top of card */
 .auth-tab-switcher {
     display: flex;
-    background-color: var(--paper, #F6F3EC);
+    background-color: #EDE8DE;
     border: 1px solid var(--line, #E4DFD2);
     border-radius: 10px;
     padding: 3px;
@@ -438,7 +438,7 @@
     padding: 8px 12px;
     font-size: 13px;
     font-weight: 500;
-    color: var(--ink-soft, #4B5A52);
+    color: var(--ink-soft, #5C4A2A);
     background: transparent;
     border: none;
     border-radius: 8px;
@@ -450,13 +450,14 @@
 
 .auth-tab-btn:hover {
     color: var(--ink, #1E2A24);
+    background-color: rgba(148, 113, 72, 0.12);
 }
 
 .auth-tab-btn.active {
-    background-color: #FFFFFF;
-    color: var(--ink, #1E2A24);
+    background-color: var(--accent, #947148);
+    color: #FFFFFF;
     font-weight: 600;
-    box-shadow: 0 1px 3px rgba(30, 42, 36, 0.08);
+    box-shadow: 0 2px 6px rgba(148, 113, 72, 0.35);
 }
 
 /* Quick Demo Accounts Grid */
