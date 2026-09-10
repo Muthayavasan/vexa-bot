@@ -430,7 +430,8 @@ def save_user_chats(req: SaveChatsRequest, authorization: Optional[str] = Header
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
-    # Sync sessions to SQLite
+    # Sync sessions to database — upsert each incoming session
+    incoming_session_ids = set(req.sessions.keys())
     for sid, sdata in req.sessions.items():
         session_obj = db.query(ChatSessionModel).filter(ChatSessionModel.session_id == sid).first()
         if not session_obj:
@@ -457,8 +458,17 @@ def save_user_chats(req: SaveChatsRequest, authorization: Optional[str] = Header
                 image_data=msg.get("image", None)
             ))
 
+    # ── FULL SYNC: Remove DB sessions that no longer exist in the frontend ──
+    # This ensures deleted sessions don't reappear after logout/login
+    db_sessions = db.query(ChatSessionModel).filter(ChatSessionModel.user_id == user_id).all()
+    for db_sess in db_sessions:
+        if db_sess.session_id not in incoming_session_ids:
+            db.query(ChatMessageModel).filter(ChatMessageModel.session_id == db_sess.session_id).delete()
+            db.delete(db_sess)
+
     db.commit()
     return {"status": "success", "user_id": user_id}
+
 
 
 @app.delete("/api/user/chats/{session_id}")
