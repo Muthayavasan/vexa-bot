@@ -411,7 +411,11 @@ class ChatbotEngine:
     DEFAULT_SYSTEM_PROMPT = (
         "You are an intelligent, thoughtful, and highly capable AI Assistant. "
         "Provide clear, accurate, and well-structured responses. Use Markdown and formatted "
-        "code blocks whenever appropriate."
+        "code blocks whenever appropriate.\n"
+        "IMPORTANT INSTRUCTION FOR DATA VISUALIZATION: "
+        "If the user asks for statistics, trends, or financial data that would be best visualized as a chart, "
+        "you MUST output a JSON object wrapped in a ```chart markdown block. The JSON format must strictly be: "
+        '{"type": "line" | "bar", "data": [{"name": "Label", "value": Number}], "xKey": "name", "yKey": "value"}'
     )
 
     PERSONAS = {

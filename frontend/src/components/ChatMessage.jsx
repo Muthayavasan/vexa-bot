@@ -5,6 +5,7 @@ import remarkGfm from 'remark-gfm';
 import rehypeKatex from 'rehype-katex';
 import { Copy, Check, Image as ImageIcon, FileText } from 'lucide-react';
 import 'katex/dist/katex.min.css';
+import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
 
 const CodeBlock = ({ node, inline, className, children, ...props }) => {
     const [copied, setCopied] = useState(false);
@@ -23,6 +24,40 @@ const CodeBlock = ({ node, inline, className, children, ...props }) => {
                 {children}
             </code>
         );
+    }
+
+    if (match && match[1] === 'chart') {
+        try {
+            const chartData = JSON.parse(codeString);
+            const isLine = chartData.type !== 'bar';
+            return (
+                <div className="ln-code-frame" style={{ padding: '20px 20px 10px 0', background: 'var(--surface)', border: '1px solid var(--line)' }}>
+                    <div style={{ width: '100%', height: 280 }}>
+                        <ResponsiveContainer width="100%" height="100%">
+                            {isLine ? (
+                                <LineChart data={chartData.data}>
+                                    <CartesianGrid strokeDasharray="3 3" stroke="var(--line)" vertical={false} />
+                                    <XAxis dataKey={chartData.xKey || "name"} stroke="var(--muted)" fontSize={11} tickLine={false} axisLine={false} />
+                                    <YAxis stroke="var(--muted)" fontSize={11} tickLine={false} axisLine={false} />
+                                    <RechartsTooltip contentStyle={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '8px', fontSize: '12px', color: 'var(--ink)' }} itemStyle={{ color: 'var(--accent)' }} />
+                                    <Line type="monotone" dataKey={chartData.yKey || "value"} stroke="var(--accent)" strokeWidth={2.5} dot={{ fill: 'var(--surface)', stroke: 'var(--accent)', strokeWidth: 2, r: 4 }} activeDot={{ r: 6 }} />
+                                </LineChart>
+                            ) : (
+                                <BarChart data={chartData.data}>
+                                    <CartesianGrid strokeDasharray="3 3" stroke="var(--line)" vertical={false} />
+                                    <XAxis dataKey={chartData.xKey || "name"} stroke="var(--muted)" fontSize={11} tickLine={false} axisLine={false} />
+                                    <YAxis stroke="var(--muted)" fontSize={11} tickLine={false} axisLine={false} />
+                                    <RechartsTooltip contentStyle={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '8px', fontSize: '12px', color: 'var(--ink)' }} itemStyle={{ color: 'var(--accent)' }} cursor={{ fill: 'var(--hover-bg)' }} />
+                                    <Bar dataKey={chartData.yKey || "value"} fill="var(--accent)" radius={[4, 4, 0, 0]} />
+                                </BarChart>
+                            )}
+                        </ResponsiveContainer>
+                    </div>
+                </div>
+            );
+        } catch (e) {
+            // Fallback to normal code block if JSON is invalid or incomplete during streaming
+        }
     }
 
     return (
