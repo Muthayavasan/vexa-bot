@@ -64,7 +64,7 @@
 
 html, body {
   font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  height: 100vh;
+  height: 100dvh;
   width: 100vw;
   overflow: hidden;
   background-color: var(--paper);
@@ -83,12 +83,47 @@ html, body {
 .ln-app {
   display: grid;
   grid-template-columns: 272px 1fr;
-  height: 100vh;
+  height: 100dvh;
   width: 100vw;
   background: var(--paper);
   color: var(--ink);
   font-family: 'Inter', system-ui, sans-serif;
   overflow: hidden;
+  position: relative;
+}
+
+/* Mobile sidebar overlay backdrop */
+.ln-sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 99;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  animation: lnFadeIn 0.2s ease-out;
+}
+
+/* Mobile hamburger toggle button */
+.ln-menu-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink-soft);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s, color 0.15s;
+  box-shadow: 0 1px 3px var(--shadow-sm);
+}
+
+.ln-menu-btn:hover {
+  background: var(--hover-bg);
+  color: var(--ink);
 }
 
 /* ---------- Sidebar ---------- */
@@ -98,8 +133,9 @@ html, body {
   display: flex;
   flex-direction: column;
   padding: 18px 14px;
-  height: 100vh;
+  height: 100dvh;
   box-sizing: border-box;
+  overflow-y: auto;
 }
 
 .ln-brand {
@@ -391,7 +427,7 @@ html, body {
   flex-direction: column;
   background: var(--paper);
   min-width: 0;
-  height: 100vh;
+  height: 100dvh;
   box-sizing: border-box;
 }
 
@@ -1011,3 +1047,218 @@ html, body {
   font-size: 12px;
   font-family: 'JetBrains Mono', monospace;
 }
+
+/* ============================================================
+   Mobile Responsive Breakpoints
+   ============================================================ */
+
+/* --- Tablet / small laptop (≤ 900px) --- */
+@media (max-width: 900px) {
+  .ln-app {
+    grid-template-columns: 240px 1fr;
+  }
+  .ln-messages {
+    padding: 20px 16px;
+  }
+  .ln-composer-wrap {
+    padding: 12px 16px 16px 16px;
+  }
+  .ln-header {
+    padding: 12px 16px;
+  }
+}
+
+/* --- Mobile (≤ 768px) --- */
+@media (max-width: 768px) {
+  html, body {
+    /* Allow scrolling on mobile, managed per-section */
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  .ln-app {
+    /* Full width single column on mobile */
+    grid-template-columns: 1fr;
+    position: relative;
+  }
+
+  /* Sidebar: off-canvas drawer on mobile */
+  .ln-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 80vw;
+    max-width: 300px;
+    height: 100dvh;
+    z-index: 100;
+    transform: translateX(-100%);
+    transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 4px 0 24px rgba(0,0,0,0.18);
+    padding: 20px 16px;
+    border-right: none;
+  }
+
+  .ln-sidebar.mobile-open {
+    transform: translateX(0);
+  }
+
+  .ln-sidebar-overlay.visible {
+    display: block;
+  }
+
+  /* Show hamburger menu button */
+  .ln-menu-btn {
+    display: flex;
+  }
+
+  /* Header: tighter, with hamburger */
+  .ln-header {
+    padding: 10px 14px;
+    gap: 8px;
+  }
+
+  .ln-header-badge span:last-child {
+    display: none; /* Hide model name text, keep dot only */
+  }
+
+  .ln-header-badge {
+    padding: 4px 8px;
+    font-size: 11px;
+  }
+
+  /* Messages */
+  .ln-messages {
+    padding: 14px 12px;
+    gap: 14px;
+  }
+
+  /* Bubbles: wider on mobile */
+  .ln-bubble {
+    max-width: 88%;
+    font-size: 13.5px;
+    padding: 10px 13px;
+  }
+
+  /* Composer */
+  .ln-composer-wrap {
+    padding: 10px 12px 14px 12px;
+  }
+
+  .ln-composer {
+    padding: 7px 7px 7px 11px;
+    border-radius: 14px;
+  }
+
+  .ln-composer textarea {
+    font-size: 15px; /* Prevent iOS auto-zoom (needs ≥ 16px or viewport fix) */
+    max-height: 100px;
+  }
+
+  /* Hero welcome screen */
+  .ln-hero {
+    max-width: 100%;
+    padding: 0 8px;
+  }
+
+  .ln-hero h1 {
+    font-size: 22px;
+  }
+
+  .ln-hint {
+    font-size: 10.5px;
+  }
+
+  /* Code blocks */
+  .ln-code-frame {
+    font-size: 12px;
+  }
+
+  .ln-pre {
+    padding: 10px 12px;
+  }
+
+  /* Table: horizontal scroll */
+  .ln-table-wrapper {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Engine box on mobile: compact */
+  .ln-engine-box {
+    padding: 10px;
+    gap: 8px;
+  }
+
+  .ln-select {
+    font-size: 13px;
+    padding: 8px 26px 8px 10px;
+  }
+
+  /* Session items: larger tap targets */
+  .ln-session {
+    font-size: 14px;
+    padding: 10px 8px;
+  }
+
+  .ln-session-del-btn {
+    opacity: 1; /* Always visible on touch */
+    padding: 8px;
+  }
+
+  /* Footer */
+  .ln-sidebar-footer {
+    padding: 12px 6px 6px 6px;
+  }
+
+  /* Suggestion chips */
+  .ln-suggestion {
+    font-size: 13px;
+    padding: 10px 13px;
+  }
+
+  /* Stop pill */
+  .ln-stop-pill {
+    font-size: 12px;
+    padding: 6px 12px;
+  }
+}
+
+/* --- Small phones (≤ 480px) --- */
+@media (max-width: 480px) {
+  .ln-composer textarea {
+    font-size: 16px; /* Prevent iOS auto-zoom (≥16px required) */
+  }
+
+  .ln-bubble {
+    max-width: 94%;
+    font-size: 13px;
+    padding: 9px 12px;
+  }
+
+  .ln-hero h1 {
+    font-size: 20px;
+  }
+
+  .ln-hero p {
+    font-size: 13px;
+  }
+
+  .ln-icon-btn {
+    width: 34px;
+    height: 34px;
+  }
+
+  .ln-send {
+    width: 34px;
+    height: 34px;
+  }
+
+  /* Header badge: icon only on very small */
+  .ln-theme-btn span {
+    display: none;
+  }
+
+  .ln-theme-btn {
+    padding: 4px 7px;
+  }
+}
+

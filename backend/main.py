@@ -543,6 +543,8 @@ async def chat_stream(req: ChatRequest):
                     yield f"data: {json.dumps({'error': str(item)})}\n\n"
                     yield "data: [DONE]\n\n"
                     break
+                elif isinstance(item, dict):
+                    yield f"data: {json.dumps(item)}\n\n"
                 else:
                     yield f"data: {json.dumps({'text': item})}\n\n"
 

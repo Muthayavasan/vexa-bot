@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Send, Paperclip, Mic, MicOff, X, Image as ImageIcon, FileText, Square, Sun, Moon } from 'lucide-react';
+import { Send, Paperclip, Mic, MicOff, X, Image as ImageIcon, FileText, Square, Sun, Moon, Menu } from 'lucide-react';
 import ChatMessage from './ChatMessage';
 import WelcomeScreen from './WelcomeScreen';
 import TypingIndicator from './TypingIndicator';
@@ -57,7 +57,7 @@ function useVoiceDemo(onResult) {
     return { isListening, toggle };
 }
 
-const ChatArea = ({ activeSession, onSendMessage, onStopGenerating, isGenerating, settings }) => {
+const ChatArea = ({ activeSession, onSendMessage, onStopGenerating, isGenerating, settings, onOpenSidebar }) => {
     const [input, setInput] = useState('');
     const [attachment, setAttachment] = useState(null); // { name, type, isImage, dataUrl }
     const fileInputRef = useRef(null);
@@ -164,7 +164,15 @@ const ChatArea = ({ activeSession, onSendMessage, onStopGenerating, isGenerating
         <div className="ln-main" onPaste={handlePaste}>
             {/* Header */}
             <div className="ln-header">
-                <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <button
+                        type="button"
+                        className="ln-menu-btn"
+                        onClick={onOpenSidebar}
+                        title="Open Menu"
+                    >
+                        <Menu size={18} />
+                    </button>
                     {sessionTitle && <span className="ln-header-title">{sessionTitle}</span>}
                 </div>
 

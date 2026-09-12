@@ -50,7 +50,9 @@ const Sidebar = ({
     onNewChat,
     onDeleteSession,
     settings,
-    onSettingsChange
+    onSettingsChange,
+    isOpen,
+    onClose
 }) => {
     const sessionList = Object.values(sessions || {}).reverse();
     const { theme, toggleTheme } = useTheme();
@@ -83,7 +85,7 @@ const Sidebar = ({
     };
 
     return (
-        <aside className="ln-sidebar">
+        <aside className={`ln-sidebar${isOpen ? ' mobile-open' : ''}`}>
             {/* Brand */}
             <div className="ln-brand">
                 <div className="ln-brand-mark">

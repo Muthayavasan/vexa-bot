@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import Sidebar from './components/Sidebar';
 import ChatArea from './components/ChatArea';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -8,6 +8,7 @@ import { useChat } from './hooks/useChat';
 
 function ProtectedChatDashboard() {
     const { user, logout } = useAuth();
+    const [sidebarOpen, setSidebarOpen] = useState(false);
     const {
         sessions,
         currentSessionId,
@@ -21,19 +22,41 @@ function ProtectedChatDashboard() {
         isGenerating
     } = useChat(user);
 
+    const closeSidebar = useCallback(() => setSidebarOpen(false), []);
+    const openSidebar = useCallback(() => setSidebarOpen(true), []);
+
+    const handleSelectSession = useCallback((id) => {
+        setCurrentSessionId(id);
+        setSidebarOpen(false); // auto-close sidebar on session select (mobile)
+    }, [setCurrentSessionId]);
+
+    const handleNewChat = useCallback(() => {
+        createNewSession();
+        setSidebarOpen(false);
+    }, [createNewSession]);
+
     return (
         <div className="ln-app">
+            {/* Mobile overlay backdrop */}
+            <div
+                className={`ln-sidebar-overlay${sidebarOpen ? ' visible' : ''}`}
+                onClick={closeSidebar}
+                aria-hidden="true"
+            />
+
             {/* Left Sidebar Panel */}
             <Sidebar 
                 user={user}
                 onLogout={logout}
                 sessions={sessions}
                 currentSessionId={currentSessionId}
-                onSelectSession={setCurrentSessionId}
-                onNewChat={createNewSession}
+                onSelectSession={handleSelectSession}
+                onNewChat={handleNewChat}
                 onDeleteSession={deleteSession}
                 settings={settings}
                 onSettingsChange={setSettings}
+                isOpen={sidebarOpen}
+                onClose={closeSidebar}
             />
 
             {/* Main Content Area */}
@@ -43,6 +66,7 @@ function ProtectedChatDashboard() {
                 onStopGenerating={stopGenerating}
                 isGenerating={isGenerating}
                 settings={settings}
+                onOpenSidebar={openSidebar}
             />
         </div>
     );

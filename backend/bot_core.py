@@ -24,7 +24,7 @@ import math
 import datetime
 import urllib.request
 import urllib.error
-from typing import List, Dict, Generator, Optional, Any
+from typing import List, Dict, Generator, Optional, Any, Union
 
 # Ensure UTF-8 output on Windows consoles
 if sys.platform == "win32":
@@ -302,6 +302,53 @@ def listen_and_transcribe(
         return None
 
 
+def search_web_duckduckgo(query: str) -> str:
+    """
+    Performs a lightweight web search using DuckDuckGo Lite HTML interface.
+    Returns a formatted string of the top results without requiring any third-party packages or API keys.
+    """
+    print(f"\n[Web Search] 🔍 Searching the web for: '{query}'...", flush=True)
+    try:
+        import urllib.parse
+        import urllib.request
+        import re
+
+        encoded_query = urllib.parse.urlencode({'q': query})
+        url = "https://lite.duckduckgo.com/lite/"
+        
+        req = urllib.request.Request(
+            url,
+            data=encoded_query.encode("utf-8"),
+            headers={
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            method="POST"
+        )
+        
+        with urllib.request.urlopen(req, timeout=10) as response:
+            html = response.read().decode("utf-8")
+            
+            # Simple regex to extract search result snippets from DDG Lite HTML
+            snippets = re.findall(r'<td class=\'result-snippet\'>(.*?)</td>', html, flags=re.IGNORECASE | re.DOTALL)
+            
+            if not snippets:
+                print("[Web Search] ⚠️ No results found.", flush=True)
+                return ""
+                
+            results = []
+            for snippet in snippets[:4]:  # Take top 4 results
+                clean_text = re.sub(r'<[^>]+>', '', snippet).strip()
+                results.append(f"- {clean_text}")
+                
+            final_text = "\n".join(results)
+            print(f"[Web Search] ✅ Found {len(results)} live snippets.", flush=True)
+            return final_text
+    except Exception as e:
+        print(f"[Web Search] ❌ Failed to fetch search results: {e}", flush=True)
+        return ""
+
+
 class ChatbotEngine:
     """
     Core AI Chatbot engine managing conversation state, system instructions,
@@ -416,7 +463,7 @@ class ChatbotEngine:
         """Appends an assistant response to the context history."""
         self.history.append({"role": "assistant", "content": content})
 
-    def chat_stream(self, user_input: str, image: Optional[str] = None) -> Generator[str, None, None]:
+    def chat_stream(self, user_input: str, image: Optional[str] = None) -> Generator[Union[str, dict], None, None]:
         """
         Sends user input (and optional image) to the selected LLM provider and yields response
         text chunks in real time. Automatically updates conversation context upon completion.
@@ -429,6 +476,18 @@ class ChatbotEngine:
         self.add_user_message(user_input_clean, image=image)
         accumulated_response = []
 
+        # --- NEW: Check for Web Search Heuristics ---
+        search_keywords = ["price of", "spot price", "live price", "current price", "latest price", "stock price", "weather in"]
+        lower_input = user_input_clean.lower()
+        search_context = ""
+        
+        if any(kw in lower_input for kw in search_keywords):
+            search_results = search_web_duckduckgo(user_input_clean)
+            if search_results:
+                search_context = f"\n\n[Real-time Web Search Results]:\n{search_results}\n\nInstructions: Answer the user's question accurately using the real-time context provided above if it is relevant."
+                self.history[-1]["content"] += search_context
+        # --------------------------------------------
+
         try:
             if self.provider == "gemini":
                 stream = self._stream_gemini()
@@ -440,13 +499,20 @@ class ChatbotEngine:
                 stream = self._stream_offline(user_input_clean)
 
             for chunk in stream:
-                accumulated_response.append(chunk)
-                yield chunk
+                if isinstance(chunk, dict):
+                    yield chunk
+                else:
+                    accumulated_response.append(chunk)
+                    yield chunk
 
         except Exception as err:
-            error_message = self._format_error_message(err)
+            error_message = getattr(self, '_format_error_message', lambda e: str(e))(err)
             accumulated_response.append(f"\n\n> ⚠️ **Error:** {error_message}")
             yield f"\n\n> ⚠️ **Error:** {error_message}"
+        finally:
+            # Revert the temporary context injection so it doesn't pollute user-facing chat history
+            if search_context:
+                self.history[-1]["content"] = user_input_clean
 
         # Persist complete response into memory
         final_text = "".join(accumulated_response).strip()
@@ -491,6 +557,17 @@ class ChatbotEngine:
             "input_type": "voice",
         })
 
+        # --- NEW: Check for Web Search Heuristics ---
+        search_keywords = ["price of", "spot price", "live price", "current price", "latest price", "stock price", "weather in"]
+        lower_input = transcription.lower()
+        search_context = ""
+        if any(kw in lower_input for kw in search_keywords):
+            search_results = search_web_duckduckgo(transcription)
+            if search_results:
+                search_context = f"\n\n[Real-time Web Search Results]:\n{search_results}\n\nInstructions: Answer the user's question accurately using the real-time context provided above if it is relevant."
+                self.history[-1]["content"] += search_context
+        # --------------------------------------------
+
         # Step 3: Stream LLM response
         print(f"\n[Nova AI] ({self.model_name}): ", end="", flush=True)
         response_chunks: List[str] = []
@@ -510,9 +587,12 @@ class ChatbotEngine:
                 print(chunk, end="", flush=True)
 
         except Exception as err:
-            error_msg = self._format_error_message(err)
+            error_msg = getattr(self, '_format_error_message', lambda e: str(e))(err)
             response_chunks.append(f"\n\n> ⚠️ Error: {error_msg}")
             print(f"\n[Voice] ❌ {error_msg}", flush=True)
+        finally:
+            if search_context:
+                self.history[-1]["content"] = transcription
 
         print()  # Newline
 
@@ -531,7 +611,7 @@ class ChatbotEngine:
     # -------------------------------------------------------------------------
     # 1. Google Gemini API Provider (Real-time Multimodal Vision & Streaming)
     # -------------------------------------------------------------------------
-    def _stream_gemini(self) -> Generator[str, None, None]:
+    def _stream_gemini(self) -> Generator[Union[str, dict], None, None]:
         if not self.api_key:
             raise ValueError(
                 "Gemini API key is missing. Please provide your API key in the sidebar "
@@ -609,6 +689,9 @@ class ChatbotEngine:
             try:
                 has_yielded = False
                 with urllib.request.urlopen(request, timeout=120) as resp:
+                    if current_model != self.model_name:
+                        yield {"model_changed": current_model}
+                        self.model_name = current_model
                     while True:
                         raw_line = resp.readline()
                         if not raw_line:
@@ -640,8 +723,8 @@ class ChatbotEngine:
                 except Exception:
                     msg = error_body
 
-                if e.code == 404:
-                    print(f"[Gemini API] ⚠️ Model '{current_model}' returned 404 not found, falling back to next available Gemini model...", flush=True)
+                if e.code in (404, 429):
+                    print(f"[Gemini API] ⚠️ Model '{current_model}' returned {e.code}, falling back to next available Gemini model...", flush=True)
                     last_error = RuntimeError(f"Gemini API Error ({e.code}): {msg}")
                     continue
                 else:
@@ -657,7 +740,7 @@ class ChatbotEngine:
     # -------------------------------------------------------------------------
     # 2. Groq API Streamer
     # -------------------------------------------------------------------------
-    def _stream_groq(self) -> Generator[str, None, None]:
+    def _stream_groq(self) -> Generator[Union[str, dict], None, None]:
         if not self.api_key:
             raise ValueError(
                 "Groq API key is missing. Please provide your API key in the sidebar "
@@ -670,71 +753,101 @@ class ChatbotEngine:
             if role in ("user", "assistant", "system"):
                 messages.append({"role": role, "content": msg.get("content", "")})
 
-        # Groq uses OpenAI-compatible API
-        try:
-            import openai
-            client = openai.OpenAI(api_key=self.api_key, base_url=self.base_url)
-            response = client.chat.completions.create(
-                model=self.model_name,
-                messages=messages,
-                temperature=self.temperature,
-                stream=True,
-            )
-            for chunk in response:
-                if chunk.choices and len(chunk.choices) > 0:
-                    delta = chunk.choices[0].delta
-                    if getattr(delta, "content", None):
-                        yield delta.content
-            return
-        except ImportError:
-            pass  # Fallback to standard library urllib
+        models_to_try = [self.model_name]
+        for fb in ("openai/gpt-oss-120b", "openai/gpt-oss-20b", "groq/compound", "groq/compound-mini", "qwen/qwen3.6-27b", "qwen/qwen3.8-27b"):
+            if fb not in models_to_try:
+                models_to_try.append(fb)
 
-        # Standard library HTTP fallback with real streaming
-        base = self.base_url.rstrip("/") if self.base_url else "https://api.groq.com/openai/v1"
-        url = f"{base}/chat/completions"
+        last_error = None
+        for current_model in models_to_try:
+            # Groq uses OpenAI-compatible API
+            try:
+                import openai
+                client = openai.OpenAI(api_key=self.api_key, base_url=self.base_url)
+                response = client.chat.completions.create(
+                    model=current_model,
+                    messages=messages,
+                    temperature=self.temperature,
+                    stream=True,
+                )
+                if current_model != self.model_name:
+                    yield {"model_changed": current_model}
+                    self.model_name = current_model
+                for chunk in response:
+                    if chunk.choices and len(chunk.choices) > 0:
+                        delta = chunk.choices[0].delta
+                        if getattr(delta, "content", None):
+                            yield delta.content
+                return
+            except ImportError:
+                pass  # Fallback to standard library urllib
+            except Exception as e:
+                err_str = str(e).lower()
+                if "429" in err_str or "rate limit" in err_str or "404" in err_str or "not found" in err_str:
+                    print(f"[Groq API] ⚠️ Model '{current_model}' failed with {e}, falling back...", flush=True)
+                    last_error = RuntimeError(f"Groq API Error: {str(e)}")
+                    continue
+                else:
+                    raise
 
-        payload = {
-            "model": self.model_name,
-            "messages": messages,
-            "temperature": self.temperature,
-            "stream": True,
-        }
+            # Standard library HTTP fallback with real streaming
+            base = self.base_url.rstrip("/") if self.base_url else "https://api.groq.com/openai/v1"
+            url = f"{base}/chat/completions"
 
-        req_data = json.dumps(payload).encode("utf-8")
-        headers = {
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-            "User-Agent": "Mozilla/5.0 (compatible; python-urllib)",
-        }
-        if self.api_key:
-            headers["Authorization"] = f"Bearer {self.api_key}"
+            payload = {
+                "model": current_model,
+                "messages": messages,
+                "temperature": self.temperature,
+                "stream": True,
+            }
 
-        request = urllib.request.Request(url, data=req_data, headers=headers, method="POST")
+            req_data = json.dumps(payload).encode("utf-8")
+            headers = {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                "User-Agent": "Mozilla/5.0 (compatible; python-urllib)",
+            }
+            if self.api_key:
+                headers["Authorization"] = f"Bearer {self.api_key}"
 
-        try:
-            with urllib.request.urlopen(request, timeout=60) as resp:
-                while True:
-                    raw_line = resp.readline()
-                    if not raw_line:
-                        break
-                    line_str = raw_line.decode("utf-8").strip()
-                    if line_str.startswith("data: "):
-                        data_json = line_str[6:].strip()
-                        if data_json == "[DONE]":
+            request = urllib.request.Request(url, data=req_data, headers=headers, method="POST")
+
+            try:
+                with urllib.request.urlopen(request, timeout=60) as resp:
+                    if current_model != self.model_name:
+                        yield {"model_changed": current_model}
+                        self.model_name = current_model
+                    while True:
+                        raw_line = resp.readline()
+                        if not raw_line:
                             break
-                        try:
-                            chunk_data = json.loads(data_json)
-                            choices = chunk_data.get("choices", [])
-                            if choices:
-                                delta = choices[0].get("delta", {})
-                                content = delta.get("content", "")
-                                if content:
-                                    yield content
-                        except Exception:
-                            continue
-        except urllib.error.HTTPError as e:
-            error_body = e.read().decode("utf-8")
-            raise RuntimeError(f"Groq API Error ({e.code}): {error_body}")
+                        line_str = raw_line.decode("utf-8").strip()
+                        if line_str.startswith("data: "):
+                            data_json = line_str[6:].strip()
+                            if data_json == "[DONE]":
+                                break
+                            try:
+                                chunk_data = json.loads(data_json)
+                                choices = chunk_data.get("choices", [])
+                                if choices:
+                                    delta = choices[0].get("delta", {})
+                                    content = delta.get("content", "")
+                                    if content:
+                                        yield content
+                            except Exception:
+                                continue
+                return
+            except urllib.error.HTTPError as e:
+                error_body = e.read().decode("utf-8")
+                if e.code in (404, 429):
+                    print(f"[Groq API] ⚠️ Model '{current_model}' returned {e.code}, falling back...", flush=True)
+                    last_error = RuntimeError(f"Groq API Error ({e.code}): {error_body}")
+                    continue
+                else:
+                    raise RuntimeError(f"Groq API Error ({e.code}): {error_body}")
+                    
+        if last_error:
+            raise last_error
 
     # -------------------------------------------------------------------------
     # 2.5 Anthropic / Claude Provider

@@ -333,6 +333,9 @@ export const useChat = (user) => {
                             const data = JSON.parse(dataStr);
                             if (data.error) {
                                 accumulatedResponse += `\n\n> ⚠️ **Error:** ${data.error}`;
+                            } else if (data.model_changed) {
+                                setSettings(prev => ({ ...prev, model: data.model_changed }));
+                                accumulatedResponse += `\n\n> 🔄 *Model automatically switched to ${data.model_changed} due to rate limits.*\n\n`;
                             } else if (data.text) {
                                 accumulatedResponse += data.text;
                             }
