@@ -250,8 +250,17 @@ const ChatArea = ({ activeSession, onSendMessage, onStopGenerating, isGenerating
                                 <button type="button" className="ln-quick-action-btn" onClick={() => handleSend("What's the weather in New York today?")}>
                                     <Sun size={13} /> Weather Search
                                 </button>
+                                <button type="button" className="ln-quick-action-btn" onClick={() => handleSend("Explain quantum computing simply")}>
+                                    <Sparkles size={13} /> Explain Concept
+                                </button>
+                                <button type="button" className="ln-quick-action-btn" onClick={() => handleSend("What is the current stock price of Apple?")}>
+                                    <Sparkles size={13} /> Apple Stock
+                                </button>
                                 <button type="button" className="ln-quick-action-btn" onClick={() => handleSend("Latest AI technology news today")}>
                                     <FileText size={13} /> Tech News
+                                </button>
+                                <button type="button" className="ln-quick-action-btn" onClick={() => handleSend("Write a professional email requesting time off")}>
+                                    <FileText size={13} /> Write Email
                                 </button>
                             </div>
                             
@@ -263,8 +272,17 @@ const ChatArea = ({ activeSession, onSendMessage, onStopGenerating, isGenerating
                                 <button type="button" className="ln-quick-action-btn" tabIndex={-1} onClick={() => handleSend("What's the weather in New York today?")}>
                                     <Sun size={13} /> Weather Search
                                 </button>
+                                <button type="button" className="ln-quick-action-btn" tabIndex={-1} onClick={() => handleSend("Explain quantum computing simply")}>
+                                    <Sparkles size={13} /> Explain Concept
+                                </button>
+                                <button type="button" className="ln-quick-action-btn" tabIndex={-1} onClick={() => handleSend("What is the current stock price of Apple?")}>
+                                    <Sparkles size={13} /> Apple Stock
+                                </button>
                                 <button type="button" className="ln-quick-action-btn" tabIndex={-1} onClick={() => handleSend("Latest AI technology news today")}>
                                     <FileText size={13} /> Tech News
+                                </button>
+                                <button type="button" className="ln-quick-action-btn" tabIndex={-1} onClick={() => handleSend("Write a professional email requesting time off")}>
+                                    <FileText size={13} /> Write Email
                                 </button>
                             </div>
                         </div>

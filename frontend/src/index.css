@@ -789,7 +789,7 @@ html, body {
 .ln-quick-actions-track {
   display: flex;
   width: max-content;
-  animation: ln-marquee 8s linear infinite;
+  animation: ln-marquee 16s linear infinite;
   padding: 4px 0 8px 0;
 }
 
