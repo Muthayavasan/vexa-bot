@@ -131,15 +131,18 @@ export const useChat = (user) => {
             localStorage.setItem(sessionsStorageKey, JSON.stringify(sessions));
 
             if (userId !== 'guest' && user?.email) {
-                const headers = { 'Content-Type': 'application/json' };
-                if (userToken) {
-                    headers['Authorization'] = `Bearer ${userToken}`;
-                }
-                fetch(`${BACKEND_URL}/api/user/chats`, {
-                    method: 'POST',
-                    headers,
-                    body: JSON.stringify({ user_id: userId, email: user.email, sessions })
-                }).catch(() => {});
+                if (window._chatSaveTimeout) clearTimeout(window._chatSaveTimeout);
+                window._chatSaveTimeout = setTimeout(() => {
+                    const headers = { 'Content-Type': 'application/json' };
+                    if (userToken) {
+                        headers['Authorization'] = `Bearer ${userToken}`;
+                    }
+                    fetch(`${BACKEND_URL}/api/user/chats`, {
+                        method: 'POST',
+                        headers,
+                        body: JSON.stringify({ user_id: userId, email: user.email, sessions })
+                    }).catch(() => {});
+                }, 1500);
             }
         }
     }, [sessions, userId, userToken, user?.email, sessionsStorageKey]);
