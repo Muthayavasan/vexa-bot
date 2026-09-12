@@ -302,50 +302,57 @@ def listen_and_transcribe(
         return None
 
 
-def search_web_duckduckgo(query: str) -> str:
+def search_web_tavily(query: str) -> str:
     """
-    Performs a lightweight web search using DuckDuckGo Lite HTML interface.
-    Returns a formatted string of the top results without requiring any third-party packages or API keys.
+    Performs a robust web search using the Tavily API.
+    Returns a formatted string of the top results.
     """
-    print(f"\n[Web Search] 🔍 Searching the web for: '{query}'...", flush=True)
+    import os
+    import json
+    import urllib.request
+    
+    api_key = os.environ.get("TAVILY_API_KEY")
+    if not api_key:
+        print("[Web Search] ⚠️ TAVILY_API_KEY not found in environment. Skipping search.", flush=True)
+        return ""
+        
+    print(f"\n[Web Search] 🔍 Searching Tavily for: '{query}'...", flush=True)
     try:
-        import urllib.parse
-        import urllib.request
-        import re
-
-        encoded_query = urllib.parse.urlencode({'q': query})
-        url = "https://lite.duckduckgo.com/lite/"
+        url = "https://api.tavily.com/search"
+        payload = {
+            "api_key": api_key.strip(),
+            "query": query,
+            "search_depth": "basic",
+            "include_answer": False,
+            "max_results": 3
+        }
         
         req = urllib.request.Request(
             url,
-            data=encoded_query.encode("utf-8"),
-            headers={
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-                "Content-Type": "application/x-www-form-urlencoded"
-            },
+            data=json.dumps(payload).encode("utf-8"),
+            headers={"Content-Type": "application/json"},
             method="POST"
         )
         
         with urllib.request.urlopen(req, timeout=10) as response:
-            html = response.read().decode("utf-8")
+            data = json.loads(response.read().decode("utf-8"))
+            results = data.get("results", [])
             
-            # Simple regex to extract search result snippets from DDG Lite HTML
-            snippets = re.findall(r'<td class=\'result-snippet\'>(.*?)</td>', html, flags=re.IGNORECASE | re.DOTALL)
-            
-            if not snippets:
+            if not results:
                 print("[Web Search] ⚠️ No results found.", flush=True)
                 return ""
                 
-            results = []
-            for snippet in snippets[:4]:  # Take top 4 results
-                clean_text = re.sub(r'<[^>]+>', '', snippet).strip()
-                results.append(f"- {clean_text}")
+            formatted_results = []
+            for r in results:
+                title = r.get("title", "")
+                content = r.get("content", "")
+                formatted_results.append(f"- {title}: {content}")
                 
-            final_text = "\n".join(results)
-            print(f"[Web Search] ✅ Found {len(results)} live snippets.", flush=True)
+            final_text = "\n".join(formatted_results)
+            print(f"[Web Search] ✅ Found {len(results)} live snippets from Tavily.", flush=True)
             return final_text
     except Exception as e:
-        print(f"[Web Search] ❌ Failed to fetch search results: {e}", flush=True)
+        print(f"[Web Search] ❌ Failed to fetch Tavily search results: {e}", flush=True)
         return ""
 
 
@@ -482,7 +489,7 @@ class ChatbotEngine:
         search_context = ""
         
         if any(kw in lower_input for kw in search_keywords):
-            search_results = search_web_duckduckgo(user_input_clean)
+            search_results = search_web_tavily(user_input_clean)
             if search_results:
                 search_context = f"\n\n[Real-time Web Search Results]:\n{search_results}\n\nInstructions: Answer the user's question accurately using the real-time context provided above if it is relevant."
                 self.history[-1]["content"] += search_context
@@ -562,7 +569,7 @@ class ChatbotEngine:
         lower_input = transcription.lower()
         search_context = ""
         if any(kw in lower_input for kw in search_keywords):
-            search_results = search_web_duckduckgo(transcription)
+            search_results = search_web_tavily(transcription)
             if search_results:
                 search_context = f"\n\n[Real-time Web Search Results]:\n{search_results}\n\nInstructions: Answer the user's question accurately using the real-time context provided above if it is relevant."
                 self.history[-1]["content"] += search_context
