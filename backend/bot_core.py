@@ -477,7 +477,7 @@ class ChatbotEngine:
         accumulated_response = []
 
         # --- NEW: Check for Web Search Heuristics ---
-        search_keywords = ["price of", "spot price", "live price", "current price", "latest price", "stock price", "weather in"]
+        search_keywords = ["price", "live", "current", "latest", "today", "stock", "weather", "news"]
         lower_input = user_input_clean.lower()
         search_context = ""
         
@@ -558,7 +558,7 @@ class ChatbotEngine:
         })
 
         # --- NEW: Check for Web Search Heuristics ---
-        search_keywords = ["price of", "spot price", "live price", "current price", "latest price", "stock price", "weather in"]
+        search_keywords = ["price", "live", "current", "latest", "today", "stock", "weather", "news"]
         lower_input = transcription.lower()
         search_context = ""
         if any(kw in lower_input for kw in search_keywords):
