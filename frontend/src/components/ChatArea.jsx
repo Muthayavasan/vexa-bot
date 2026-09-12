@@ -1,9 +1,61 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Send, Paperclip, Mic, MicOff, X, Image as ImageIcon, FileText, Square, Sun, Moon, Menu, Sparkles } from 'lucide-react';
+import { Send, Paperclip, Mic, MicOff, X, Image as ImageIcon, FileText, Square, Sun, Moon, Menu, Sparkles, Volume2, VolumeX } from 'lucide-react';
 import ChatMessage from './ChatMessage';
 import WelcomeScreen from './WelcomeScreen';
 import TypingIndicator from './TypingIndicator';
 import { useTheme } from '../context/ThemeContext';
+
+function useSoundEffects() {
+    const [isMuted, setIsMuted] = useState(() => localStorage.getItem('vexa_muted') === 'true');
+
+    const toggleMute = () => {
+        setIsMuted(prev => {
+            const next = !prev;
+            localStorage.setItem('vexa_muted', String(next));
+            return next;
+        });
+    };
+
+    const playPop = useCallback(() => {
+        if (isMuted) return;
+        try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(400, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(800, ctx.currentTime + 0.05);
+            gain.gain.setValueAtTime(0, ctx.currentTime);
+            gain.gain.linearRampToValueAtTime(0.2, ctx.currentTime + 0.01);
+            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+            osc.start(ctx.currentTime);
+            osc.stop(ctx.currentTime + 0.1);
+        } catch (e) {}
+    }, [isMuted]);
+
+    const playChime = useCallback(() => {
+        if (isMuted) return;
+        try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(880, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(1760, ctx.currentTime + 0.1);
+            gain.gain.setValueAtTime(0, ctx.currentTime);
+            gain.gain.linearRampToValueAtTime(0.15, ctx.currentTime + 0.02);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.8);
+            osc.start(ctx.currentTime);
+            osc.stop(ctx.currentTime + 0.8);
+        } catch (e) {}
+    }, [isMuted]);
+
+    return { isMuted, toggleMute, playPop, playChime };
+}
 
 function useAutoScroll(dep) {
     const ref = useRef(null);
@@ -67,6 +119,16 @@ const ChatArea = ({ activeSession, onSendMessage, onStopGenerating, isGenerating
     const scrollRef = useAutoScroll(messages.length + (isGenerating ? 1 : 0));
 
     const { isListening, toggle: toggleMic } = useVoiceDemo((text) => setInput(text));
+    const { isMuted, toggleMute, playPop, playChime } = useSoundEffects();
+
+    // Trigger chime when AI finishes generating
+    const prevGeneratingRef = useRef(isGenerating);
+    useEffect(() => {
+        if (prevGeneratingRef.current && !isGenerating) {
+            playChime();
+        }
+        prevGeneratingRef.current = isGenerating;
+    }, [isGenerating, playChime]);
 
     // Auto-resize textarea
     useEffect(() => {
@@ -82,6 +144,7 @@ const ChatArea = ({ activeSession, onSendMessage, onStopGenerating, isGenerating
 
         const imgToSend = attachment?.dataUrl || (attachment?.isImage ? attachment.dataUrl : null);
         
+        playPop();
         onSendMessage(text, imgToSend);
         setInput('');
         setAttachment(null);
@@ -177,6 +240,16 @@ const ChatArea = ({ activeSession, onSendMessage, onStopGenerating, isGenerating
                 </div>
 
                 <div className="ln-header-actions">
+                    <button
+                        type="button"
+                        className="ln-theme-btn"
+                        onClick={toggleMute}
+                        title={isMuted ? 'Unmute Sound Effects' : 'Mute Sound Effects'}
+                    >
+                        {isMuted ? <VolumeX size={13} /> : <Volume2 size={13} />}
+                        <span>{isMuted ? 'Muted' : 'Sound'}</span>
+                    </button>
+
                     <button
                         type="button"
                         className="ln-theme-btn"
@@ -289,7 +362,7 @@ const ChatArea = ({ activeSession, onSendMessage, onStopGenerating, isGenerating
                     </div>
                 )}
 
-                <div className="ln-composer">
+                <div className={`ln-composer ${isGenerating ? 'ln-thinking' : ''}`}>
                     <button
                         type="button"
                         className="ln-icon-btn"
