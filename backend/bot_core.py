@@ -25,7 +25,12 @@ import datetime
 import urllib.request
 import urllib.error
 from typing import List, Dict, Generator, Optional, Any, Union
-
+import base64
+import io
+try:
+    import PyPDF2
+except ImportError:
+    PyPDF2 = None
 # Ensure UTF-8 output on Windows consoles
 if sys.platform == "win32":
     try:
@@ -530,12 +535,37 @@ class ChatbotEngine:
         """Appends an assistant response to the context history."""
         self.history.append({"role": "assistant", "content": content})
 
+    def _extract_pdf_text(self, b64_data: str) -> str:
+        """Extracts text from a base64 encoded PDF using PyPDF2."""
+        if not PyPDF2:
+            return "[Error: PyPDF2 library not installed in backend]"
+        try:
+            pdf_bytes = base64.b64decode(b64_data)
+            reader = PyPDF2.PdfReader(io.BytesIO(pdf_bytes))
+            text_blocks = []
+            for i, page in enumerate(reader.pages):
+                text = page.extract_text()
+                if text:
+                    text_blocks.append(f"--- Page {i+1} ---\n{text}")
+            return "\n".join(text_blocks)
+        except Exception as e:
+            return f"[Error extracting PDF text: {str(e)}]"
+
     def chat_stream(self, user_input: str, image: Optional[str] = None) -> Generator[Union[str, dict], None, None]:
         """
-        Sends user input (and optional image) to the selected LLM provider and yields response
+        Sends user input (and optional image/pdf) to the selected LLM provider and yields response
         text chunks in real time. Automatically updates conversation context upon completion.
         """
         user_input_clean = user_input.strip()
+        
+        # --- NEW: PDF Document Parsing ---
+        if image and image.startswith("data:application/pdf"):
+            b64_data = image.split(",", 1)[-1]
+            extracted_text = self._extract_pdf_text(b64_data)
+            pdf_context = f"\n\n[Attached PDF Document Content]:\n{extracted_text}\n\nInstructions: Answer the user's question using the document provided above."
+            user_input_clean += pdf_context
+            image = None # Remove image payload since it is a document
+
         if not user_input_clean and not image:
             return
 

@@ -153,11 +153,11 @@ const ChatMessage = ({ role, content, text, image, attachment }) => {
                                     window.speechSynthesis.speak(ut);
                                 }
                             }}
-                            className="ln-copy-btn"
-                            style={{ padding: '4px 8px', gap: '6px', opacity: 0.8 }}
+                            className="ln-tts-btn"
+                            style={{ padding: '6px 12px', gap: '6px' }}
                             title="Read Aloud"
                         >
-                            <Volume2 size={13} />
+                            <Volume2 size={14} />
                             <span>Read Aloud</span>
                         </button>
                     </div>

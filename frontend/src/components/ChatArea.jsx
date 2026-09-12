@@ -150,10 +150,10 @@ const ChatArea = ({ activeSession, onSendMessage, onStopGenerating, isGenerating
         const text = (overrideText ?? input).trim();
         if ((!text && !attachment) || isGenerating) return;
 
-        const imgToSend = attachment?.dataUrl || (attachment?.isImage ? attachment.dataUrl : null);
+        const dataToSend = attachment?.dataUrl || null;
         
         playPop();
-        onSendMessage(text, imgToSend);
+        onSendMessage(text, dataToSend);
         setInput('');
         setAttachment(null);
         if (textareaRef.current) {
@@ -173,24 +173,26 @@ const ChatArea = ({ activeSession, onSendMessage, onStopGenerating, isGenerating
         if (!file) return;
 
         const isImage = file.type.startsWith('image/');
-        const reader = new FileReader();
+        const isPDF = file.type === 'application/pdf';
 
-        reader.onload = (event) => {
-            setAttachment({
-                name: file.name,
-                type: file.type,
-                isImage,
-                dataUrl: event.target.result
-            });
-        };
-
-        if (isImage) {
+        if (isImage || isPDF) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                setAttachment({
+                    name: file.name,
+                    type: file.type,
+                    isImage,
+                    isPDF,
+                    dataUrl: event.target.result
+                });
+            };
             reader.readAsDataURL(file);
         } else {
             setAttachment({
                 name: file.name,
                 type: file.type,
                 isImage: false,
+                isPDF: false,
                 dataUrl: null
             });
         }

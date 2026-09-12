@@ -748,7 +748,29 @@ html, body {
 
 .ln-copy-btn:hover {
   background: rgba(220, 235, 228, 0.12);
-  color: #FFFFFF;
+  border-color: rgba(228, 223, 210, 0.3);
+}
+
+.ln-tts-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--surface);
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.ln-tts-btn:hover {
+  background: var(--accent);
+  color: var(--bg);
+  transform: translateY(-1px);
 }
 
 .ln-pre {
