@@ -3,8 +3,8 @@ import { Sparkles, FileText, MessageSquare } from 'lucide-react';
 
 const SUGGESTIONS = [
     { icon: Sparkles, text: 'Explain a concept simply' },
+    { icon: MessageSquare, text: 'What is the live spot price of gold?' },
     { icon: FileText, text: 'Summarize a long document' },
-    { icon: MessageSquare, text: 'Help me write something' },
 ];
 
 const WelcomeScreen = ({ onPromptSelect }) => {
