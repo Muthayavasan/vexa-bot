@@ -776,19 +776,31 @@ html, body {
   30% { transform: translateY(-4px); opacity: 1; }
 }
 
-/* ---------- Quick Actions (Chat Box Prompts) ---------- */
-.ln-quick-actions {
-  display: flex;
-  gap: 8px;
+/* ---------- Quick Actions (Chat Box Prompts Marquee) ---------- */
+.ln-quick-actions-marquee {
+  width: 100%;
+  overflow: hidden;
   margin-bottom: 12px;
-  overflow-x: auto;
-  padding-bottom: 4px;
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+  position: relative;
+  mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
 }
 
-.ln-quick-actions::-webkit-scrollbar {
-  display: none;
+.ln-quick-actions-track {
+  display: flex;
+  gap: 8px;
+  width: max-content;
+  animation: ln-marquee 20s linear infinite;
+  padding: 2px 0 6px 0;
+}
+
+.ln-quick-actions-track:hover {
+  animation-play-state: paused;
+}
+
+@keyframes ln-marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(calc(-50% - 4px)); }
 }
 
 .ln-quick-action-btn {

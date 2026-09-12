@@ -241,19 +241,29 @@ const ChatArea = ({ activeSession, onSendMessage, onStopGenerating, isGenerating
                 )}
 
                 {messages.length === 0 && !isGenerating && (
-                    <div className="ln-quick-actions">
-                        <button type="button" className="ln-quick-action-btn" onClick={() => handleSend("What is the live spot price of gold today?")}>
-                            <Sparkles size={13} />
-                            Live Gold Price
-                        </button>
-                        <button type="button" className="ln-quick-action-btn" onClick={() => handleSend("What's the weather in New York today?")}>
-                            <Sun size={13} />
-                            Weather Search
-                        </button>
-                        <button type="button" className="ln-quick-action-btn" onClick={() => handleSend("Latest AI technology news today")}>
-                            <FileText size={13} />
-                            Tech News
-                        </button>
+                    <div className="ln-quick-actions-marquee">
+                        <div className="ln-quick-actions-track">
+                            <button type="button" className="ln-quick-action-btn" onClick={() => handleSend("What is the live spot price of gold today?")}>
+                                <Sparkles size={13} /> Live Gold Price
+                            </button>
+                            <button type="button" className="ln-quick-action-btn" onClick={() => handleSend("What's the weather in New York today?")}>
+                                <Sun size={13} /> Weather Search
+                            </button>
+                            <button type="button" className="ln-quick-action-btn" onClick={() => handleSend("Latest AI technology news today")}>
+                                <FileText size={13} /> Tech News
+                            </button>
+                            
+                            {/* Duplicate for seamless infinite scroll */}
+                            <button type="button" className="ln-quick-action-btn" onClick={() => handleSend("What is the live spot price of gold today?")}>
+                                <Sparkles size={13} /> Live Gold Price
+                            </button>
+                            <button type="button" className="ln-quick-action-btn" onClick={() => handleSend("What's the weather in New York today?")}>
+                                <Sun size={13} /> Weather Search
+                            </button>
+                            <button type="button" className="ln-quick-action-btn" onClick={() => handleSend("Latest AI technology news today")}>
+                                <FileText size={13} /> Tech News
+                            </button>
+                        </div>
                     </div>
                 )}
 
