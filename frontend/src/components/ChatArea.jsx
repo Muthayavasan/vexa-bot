@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Send, Paperclip, Mic, MicOff, X, Image as ImageIcon, FileText, Square, Sun, Moon, Menu } from 'lucide-react';
+import { Send, Paperclip, Mic, MicOff, X, Image as ImageIcon, FileText, Square, Sun, Moon, Menu, Sparkles } from 'lucide-react';
 import ChatMessage from './ChatMessage';
 import WelcomeScreen from './WelcomeScreen';
 import TypingIndicator from './TypingIndicator';
@@ -236,6 +236,23 @@ const ChatArea = ({ activeSession, onSendMessage, onStopGenerating, isGenerating
                         <span>{attachment.name}</span>
                         <button type="button" onClick={() => setAttachment(null)} title="Remove attachment">
                             <X size={13} />
+                        </button>
+                    </div>
+                )}
+
+                {messages.length === 0 && !isGenerating && (
+                    <div className="ln-quick-actions">
+                        <button type="button" className="ln-quick-action-btn" onClick={() => handleSend("What is the live spot price of gold today?")}>
+                            <Sparkles size={13} />
+                            Live Gold Price
+                        </button>
+                        <button type="button" className="ln-quick-action-btn" onClick={() => handleSend("What's the weather in New York today?")}>
+                            <Sun size={13} />
+                            Weather Search
+                        </button>
+                        <button type="button" className="ln-quick-action-btn" onClick={() => handleSend("Latest AI technology news today")}>
+                            <FileText size={13} />
+                            Tech News
                         </button>
                     </div>
                 )}
