@@ -89,6 +89,7 @@ const ChatMessage = ({ role, content, text, image, attachment }) => {
     const isUser = role === 'user';
     const messageContent = content || text || '';
     const activeAttachment = attachment || (image ? { name: 'Attached Image', isImage: true, dataUrl: image } : null);
+    const [isSpeaking, setIsSpeaking] = useState(false);
 
     return (
         <div className={`ln-row ${isUser ? 'user' : 'assistant'}`}>
@@ -145,20 +146,36 @@ const ChatMessage = ({ role, content, text, image, attachment }) => {
                             onClick={() => {
                                 if (window.speechSynthesis.speaking) {
                                     window.speechSynthesis.cancel();
+                                    setIsSpeaking(false);
                                 } else {
                                     const ut = new SpeechSynthesisUtterance(messageContent.replace(/```[\s\S]*?```/g, ""));
                                     const voices = window.speechSynthesis.getVoices();
                                     const voice = voices.find(v => v.name.includes('Google') || v.name.includes('Siri') || v.name.includes('Natural')) || voices[0];
                                     if (voice) ut.voice = voice;
+                                    
+                                    ut.onend = () => setIsSpeaking(false);
+                                    ut.onerror = () => setIsSpeaking(false);
+                                    
+                                    setIsSpeaking(true);
                                     window.speechSynthesis.speak(ut);
                                 }
                             }}
                             className="ln-tts-btn"
                             style={{ padding: '6px 12px', gap: '6px' }}
-                            title="Read Aloud"
+                            title={isSpeaking ? "Stop Reading" : "Read Aloud"}
                         >
-                            <Volume2 size={14} />
-                            <span>Read Aloud</span>
+                            {isSpeaking ? (
+                                <div className="ln-equalizer">
+                                    <div className="ln-eq-bar"></div>
+                                    <div className="ln-eq-bar"></div>
+                                    <div className="ln-eq-bar"></div>
+                                    <div className="ln-eq-bar"></div>
+                                    <div className="ln-eq-bar"></div>
+                                </div>
+                            ) : (
+                                <Volume2 size={14} />
+                            )}
+                            <span>{isSpeaking ? 'Listening...' : 'Read Aloud'}</span>
                         </button>
                     </div>
                 )}

@@ -373,6 +373,7 @@ const ChatArea = ({ activeSession, onSendMessage, onStopGenerating, isGenerating
                 )}
 
                 <div className={`ln-composer ${isGenerating ? 'ln-thinking' : ''}`}>
+                    {isListening && <div className="ln-listening-wave"></div>}
                     <button
                         type="button"
                         className="ln-icon-btn"

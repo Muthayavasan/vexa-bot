@@ -939,6 +939,8 @@ html, body {
   padding: 8px 8px 8px 12px;
   box-shadow: 0 2px 6px rgba(30, 42, 36, 0.04);
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  position: relative;
+  overflow: hidden;
 }
 
 .ln-composer:focus-within {
@@ -958,6 +960,8 @@ html, body {
   line-height: 1.5;
   max-height: 120px;
   padding: 6px 2px;
+  position: relative;
+  z-index: 1;
 }
 
 .ln-composer textarea::placeholder {
@@ -977,6 +981,8 @@ html, body {
   cursor: pointer;
   flex-shrink: 0;
   transition: background 0.15s ease, color 0.15s ease;
+  position: relative;
+  z-index: 1;
 }
 
 .ln-icon-btn:hover:not(:disabled) {
@@ -1061,6 +1067,8 @@ html, body {
   cursor: pointer;
   flex-shrink: 0;
   transition: background 0.15s ease, opacity 0.15s ease, transform 0.1s ease;
+  position: relative;
+  z-index: 1;
 }
 
 .ln-send:hover:not(:disabled) {
@@ -1179,6 +1187,60 @@ html, body {
   font-size: 12px;
   font-family: 'JetBrains Mono', monospace;
 }
+
+/* --- Waveform & Equalizer Animations --- */
+
+.ln-equalizer {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 14px;
+}
+
+.ln-eq-bar {
+  width: 3px;
+  background-color: var(--paper);
+  border-radius: 2px;
+  animation: eqBounce 1s infinite ease-in-out;
+}
+
+.ln-eq-bar:nth-child(1) { animation-delay: -0.2s; height: 60%; }
+.ln-eq-bar:nth-child(2) { animation-delay: -0.4s; height: 100%; }
+.ln-eq-bar:nth-child(3) { animation-delay: -0.1s; height: 80%; }
+.ln-eq-bar:nth-child(4) { animation-delay: -0.5s; height: 40%; }
+.ln-eq-bar:nth-child(5) { animation-delay: -0.3s; height: 90%; }
+
+@keyframes eqBounce {
+  0%, 100% { transform: scaleY(0.3); }
+  50% { transform: scaleY(1); }
+}
+
+.ln-listening-wave {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(270deg, #FF5F56, #FFBD2E, #27C93F, #007AFF, #FF5F56);
+  background-size: 400% 400%;
+  animation: wavePulse 3s ease infinite, siriWave 6s ease infinite;
+  opacity: 0.15;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes siriWave {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes wavePulse {
+  0%, 100% { opacity: 0.1; transform: scaleY(0.9); }
+  50% { opacity: 0.25; transform: scaleY(1); }
+}
+
 
 /* ============================================================
    Mobile Responsive Breakpoints
