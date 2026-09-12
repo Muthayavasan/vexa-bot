@@ -356,6 +356,52 @@ def search_web_tavily(query: str) -> str:
         return ""
 
 
+def search_finnhub_quote(symbol: str) -> str:
+    """
+    Fetches real-time stock quote from Finnhub API.
+    Returns a formatted string with the live price.
+    """
+    import os
+    import json
+    import urllib.request
+    
+    api_key = os.environ.get("FINNHUB_API_KEY")
+    if not api_key:
+        print("[Finnhub] ⚠️ FINNHUB_API_KEY not found in environment. Skipping stock fetch.", flush=True)
+        return ""
+        
+    print(f"\n[Finnhub] 📈 Fetching live stock data for: '{symbol}'...", flush=True)
+    try:
+        url = f"https://finnhub.io/api/v1/quote?symbol={symbol}&token={api_key.strip()}"
+        req = urllib.request.Request(url, method="GET")
+        
+        with urllib.request.urlopen(req, timeout=5) as response:
+            data = json.loads(response.read().decode("utf-8"))
+            if "c" not in data or data["c"] == 0:
+                print(f"[Finnhub] ⚠️ No live data found for symbol {symbol}.", flush=True)
+                return ""
+            
+            price = data.get("c")
+            high = data.get("h")
+            low = data.get("l")
+            open_price = data.get("o")
+            prev_close = data.get("pc")
+            
+            result_str = (
+                f"Symbol: {symbol}\n"
+                f"Current Live Price: ${price}\n"
+                f"Today's High: ${high}\n"
+                f"Today's Low: ${low}\n"
+                f"Open: ${open_price}\n"
+                f"Previous Close: ${prev_close}"
+            )
+            print(f"[Finnhub] ✅ Successfully fetched live price for {symbol}: ${price}", flush=True)
+            return result_str
+    except Exception as e:
+        print(f"[Finnhub] ❌ Failed to fetch Finnhub data: {e}", flush=True)
+        return ""
+
+
 class ChatbotEngine:
     """
     Core AI Chatbot engine managing conversation state, system instructions,
@@ -483,16 +529,37 @@ class ChatbotEngine:
         self.add_user_message(user_input_clean, image=image)
         accumulated_response = []
 
-        # --- NEW: Check for Web Search Heuristics ---
+        # --- NEW: Check for Web Search & Finnhub Heuristics ---
         search_keywords = ["price", "live", "current", "latest", "today", "stock", "weather", "news"]
         lower_input = user_input_clean.lower()
         search_context = ""
         
-        if any(kw in lower_input for kw in search_keywords):
+        # Finnhub Stock Check
+        finnhub_symbol = None
+        if "stock" in lower_input or "price" in lower_input:
+            stock_match = re.search(r'\b([A-Z]{1,5})\b', user_input_clean)
+            if stock_match:
+                finnhub_symbol = stock_match.group(1)
+            else:
+                common_stocks = {"apple": "AAPL", "tesla": "TSLA", "google": "GOOGL", "microsoft": "MSFT", "amazon": "AMZN", "nvidia": "NVDA", "meta": "META"}
+                for name, sym in common_stocks.items():
+                    if name in lower_input:
+                        finnhub_symbol = sym
+                        break
+        
+        if finnhub_symbol:
+            finnhub_results = search_finnhub_quote(finnhub_symbol)
+            if finnhub_results:
+                search_context = f"\n\n[Real-time Finnhub Stock Data]:\n{finnhub_results}\n\nInstructions: Answer the user's question accurately using the live stock data provided above."
+                
+        # Fallback to Tavily if Finnhub wasn't used or failed
+        if not search_context and any(kw in lower_input for kw in search_keywords):
             search_results = search_web_tavily(user_input_clean)
             if search_results:
                 search_context = f"\n\n[Real-time Web Search Results]:\n{search_results}\n\nInstructions: Answer the user's question accurately using the real-time context provided above if it is relevant."
-                self.history[-1]["content"] += search_context
+                
+        if search_context:
+            self.history[-1]["content"] += search_context
         # --------------------------------------------
 
         try:
