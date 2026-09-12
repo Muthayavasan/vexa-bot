@@ -788,10 +788,15 @@ html, body {
 
 .ln-quick-actions-track {
   display: flex;
-  gap: 12px;
   width: max-content;
-  animation: ln-marquee 12s linear infinite;
+  animation: ln-marquee 8s linear infinite;
   padding: 4px 0 8px 0;
+}
+
+.ln-quick-actions-group {
+  display: flex;
+  gap: 12px;
+  padding-right: 12px;
 }
 
 .ln-quick-actions-track:hover {
@@ -800,7 +805,7 @@ html, body {
 
 @keyframes ln-marquee {
   0% { transform: translateX(0); }
-  100% { transform: translateX(calc(-50% - 6px)); }
+  100% { transform: translateX(-50%); }
 }
 
 .ln-quick-action-btn {
