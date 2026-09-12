@@ -291,6 +291,7 @@ export const useChat = (user) => {
                     provider: resolvedProvider,
                     model: resolvedModel,
                     system_prompt: settings.systemPrompt || "You are an intelligent, thoughtful, and highly capable AI Assistant.",
+                    persona: settings.persona || "Helpful Assistant",
                     temperature: settings.temperature ?? 0.7,
                     history: currentSession.messages,
                     message: textClean,

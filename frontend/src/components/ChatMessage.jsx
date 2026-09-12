@@ -3,7 +3,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkMath from 'remark-math';
 import remarkGfm from 'remark-gfm';
 import rehypeKatex from 'rehype-katex';
-import { Copy, Check, Image as ImageIcon, FileText } from 'lucide-react';
+import { Copy, Check, Image as ImageIcon, FileText, Volume2 } from 'lucide-react';
 import 'katex/dist/katex.min.css';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
 
@@ -136,6 +136,31 @@ const ChatMessage = ({ role, content, text, image, attachment }) => {
                     >
                         {messageContent}
                     </ReactMarkdown>
+                )}
+                
+                {!isUser && messageContent && (
+                    <div style={{ marginTop: '10px', display: 'flex', justifyContent: 'flex-start' }}>
+                        <button
+                            type="button"
+                            onClick={() => {
+                                if (window.speechSynthesis.speaking) {
+                                    window.speechSynthesis.cancel();
+                                } else {
+                                    const ut = new SpeechSynthesisUtterance(messageContent.replace(/```[\s\S]*?```/g, ""));
+                                    const voices = window.speechSynthesis.getVoices();
+                                    const voice = voices.find(v => v.name.includes('Google') || v.name.includes('Siri') || v.name.includes('Natural')) || voices[0];
+                                    if (voice) ut.voice = voice;
+                                    window.speechSynthesis.speak(ut);
+                                }
+                            }}
+                            className="ln-copy-btn"
+                            style={{ padding: '4px 8px', gap: '6px', opacity: 0.8 }}
+                            title="Read Aloud"
+                        >
+                            <Volume2 size={13} />
+                            <span>Read Aloud</span>
+                        </button>
+                    </div>
                 )}
             </div>
         </div>

@@ -464,13 +464,23 @@ class ChatbotEngine:
         api_key: Optional[str] = None,
         model_name: Optional[str] = None,
         system_prompt: Optional[str] = None,
+        persona: Optional[str] = None,
         temperature: float = 0.7,
         base_url: Optional[str] = None,
     ):
         self.provider = provider.lower().strip()
         self.api_key = (api_key or self._get_default_api_key(self.provider) or "").strip()
         self.model_name = model_name or self._get_default_model(self.provider)
-        self.system_prompt = system_prompt or self.DEFAULT_SYSTEM_PROMPT
+        
+        base_prompt = self.PERSONAS.get(persona, system_prompt or self.DEFAULT_SYSTEM_PROMPT)
+        charting_instruction = (
+            "\nIMPORTANT INSTRUCTION FOR DATA VISUALIZATION: "
+            "If the user asks for statistics, trends, or financial data that would be best visualized as a chart, "
+            "you MUST output a JSON object wrapped in a ```chart markdown block. The JSON format must strictly be: "
+            '{"type": "line" | "bar", "data": [{"name": "Label", "value": Number}], "xKey": "name", "yKey": "value"}'
+        )
+        self.system_prompt = base_prompt if "DATA VISUALIZATION" in base_prompt else base_prompt + charting_instruction
+        
         self.temperature = float(temperature)
         self.base_url = base_url or self._get_default_base_url(self.provider)
         self.history: List[Dict[str, str]] = []

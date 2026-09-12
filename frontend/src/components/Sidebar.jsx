@@ -146,6 +146,26 @@ const Sidebar = ({
                     </div>
                 </div>
 
+
+                {/* Persona Selector */}
+                <div className="ln-select-group">
+                    <label className="ln-select-label">AI Persona</label>
+                    <div className="ln-select-wrap">
+                        <select
+                            value={settings?.persona || 'Helpful Assistant'}
+                            onChange={(e) => onSettingsChange({ ...settings, persona: e.target.value })}
+                            className="ln-select"
+                        >
+                            <option value="Helpful Assistant">Helpful Assistant</option>
+                            <option value="Senior Python Engineer">Senior Python Engineer</option>
+                            <option value="Creative Writer">Creative Writer</option>
+                            <option value="Concise Tech Tutor">Concise Tech Tutor</option>
+                            <option value="Executive Analyst">Executive Analyst</option>
+                        </select>
+                        <ChevronDown size={13} className="ln-select-chevron" />
+                    </div>
+                </div>
+
             </div>
 
             {/* Recent Sessions List */}

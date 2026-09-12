@@ -16,43 +16,51 @@ function useSoundEffects() {
         });
     };
 
-    const playPop = useCallback(() => {
+    const playMarimba = useCallback((freqs, duration) => {
         if (isMuted) return;
         try {
             const ctx = new (window.AudioContext || window.webkitAudioContext)();
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(400, ctx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(800, ctx.currentTime + 0.05);
-            gain.gain.setValueAtTime(0, ctx.currentTime);
-            gain.gain.linearRampToValueAtTime(0.2, ctx.currentTime + 0.01);
-            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
-            osc.start(ctx.currentTime);
-            osc.stop(ctx.currentTime + 0.1);
+            const now = ctx.currentTime;
+            
+            freqs.forEach((freq, i) => {
+                const osc = ctx.createOscillator();
+                const osc2 = ctx.createOscillator();
+                const gain = ctx.createGain();
+                const filter = ctx.createBiquadFilter();
+                
+                osc.type = 'sine';
+                osc2.type = 'triangle';
+                
+                osc.frequency.value = freq;
+                osc2.frequency.value = freq;
+                
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(1500, now);
+                filter.frequency.exponentialRampToValueAtTime(300, now + duration);
+                
+                osc.connect(gain);
+                osc2.connect(gain);
+                gain.connect(filter);
+                filter.connect(ctx.destination);
+                
+                // Extremely short attack, warm decay
+                const timeOffset = now + (i * 0.05); // slightly stagger notes if chord
+                gain.gain.setValueAtTime(0, timeOffset);
+                gain.gain.linearRampToValueAtTime(0.15, timeOffset + 0.01);
+                gain.gain.exponentialRampToValueAtTime(0.001, timeOffset + duration);
+                
+                osc.start(timeOffset);
+                osc2.start(timeOffset);
+                osc.stop(timeOffset + duration);
+                osc2.stop(timeOffset + duration);
+            });
         } catch (e) {}
     }, [isMuted]);
 
-    const playChime = useCallback(() => {
-        if (isMuted) return;
-        try {
-            const ctx = new (window.AudioContext || window.webkitAudioContext)();
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(880, ctx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(1760, ctx.currentTime + 0.1);
-            gain.gain.setValueAtTime(0, ctx.currentTime);
-            gain.gain.linearRampToValueAtTime(0.15, ctx.currentTime + 0.02);
-            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.8);
-            osc.start(ctx.currentTime);
-            osc.stop(ctx.currentTime + 0.8);
-        } catch (e) {}
-    }, [isMuted]);
+    const playPop = useCallback(() => playMarimba([350], 0.3), [playMarimba]);
+    
+    // A beautiful major third chord (C5 + E5)
+    const playChime = useCallback(() => playMarimba([523.25, 659.25], 0.5), [playMarimba]);
 
     return { isMuted, toggleMute, playPop, playChime };
 }

@@ -211,6 +211,7 @@ class ChatRequest(BaseModel):
     provider: str
     model: str
     system_prompt: str
+    persona: Optional[str] = "Helpful Assistant"
     temperature: float
     history: List[Dict[str, Any]]
     message: str
@@ -512,6 +513,7 @@ async def chat_stream(req: ChatRequest):
             provider=req.provider,
             model_name=req.model,
             system_prompt=req.system_prompt,
+            persona=req.persona,
             temperature=req.temperature,
         )
         engine.set_history(req.history)
